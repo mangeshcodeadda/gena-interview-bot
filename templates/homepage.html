@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Bot - Automated Candidate Assessment</title>
+    <link rel="stylesheet" href="{% static 'css/modern-style.css' %}">
+    <style>
+        .hero-section {
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: var(--spacing-md);
+            animation: fadeIn 1s ease;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-xl);
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 1s ease 0.3s forwards;
+            opacity: 0;
+        }
+        
+        .features-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .feature-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .assessment-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .assessment-card {
+            border-left: 4px solid rgba(255, 255, 255, 0.3);
+            padding-left: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animated-card {
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .animated-card:nth-child(1) { animation-delay: 0.1s; }
+        .animated-card:nth-child(2) { animation-delay: 0.3s; }
+        .animated-card:nth-child(3) { animation-delay: 0.5s; }
+        .animated-card:nth-child(4) { animation-delay: 0.7s; }
+        
+        .footer {
+            text-align: center;
+            padding: var(--spacing-lg) 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: var(--spacing-xl);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">AI Interview Bot</h1>
+            <p class="hero-subtitle">Revolutionize your hiring process with our AI-powered interview platform that provides objective, consistent, and efficient candidate assessments</p>
+            <div class="cta-buttons">
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-ghost">Sign Up</a>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>Why Choose Our Platform?</h2>
+            <div class="grid">
+                <div class="card feature-card animated-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Interviews</h3>
+                    <p>Our platform uses advanced GPT-4o-mini technology to conduct natural, conversational interviews that adapt to candidate responses.</p>
+                </div>
+                
+                <div class="card feature-card animated-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Objective Assessment</h3>
+                    <p>Eliminate human bias with standardized evaluation criteria and consistent scoring across all candidates.</p>
+                </div>
+                
+                <div class="card feature-card animated-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3 class="feature-title">Time-Efficient</h3>
+                    <p>Screen more candidates in less time with our automated interview process, allowing your team to focus on final-stage candidates.</p>
+                </div>
+                
+                <div class="card feature-card animated-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Detailed Analytics</h3>
+                    <p>Receive comprehensive reports with scores, eligibility percentages, and specific feedback on candidate performance.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Primary Assessment Section -->
+        <section class="assessment-section glass-card">
+            <h2>Primary Level Candidate Assessment</h2>
+            <p>Our platform provides a comprehensive primary assessment of candidates through a structured interview process:</p>
+            
+            <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="assessment-card">
+                    <h3>1. Technical Skills Evaluation</h3>
+                    <p>Candidates are asked role-specific technical questions that assess their knowledge and problem-solving abilities in relevant technologies and methodologies.</p>
+                </div>
+                
+                <div class="assessment-card">
+                    <h3>2. Voice-Based Interactive Experience</h3>
+                    <p>All questions are delivered through our advanced text-to-speech system, creating a more engaging and accessible interview experience.</p>
+                </div>
+                
+                <div class="assessment-card">
+                    <h3>3. Adaptive Questioning</h3>
+                    <p>The interview adapts based on previous answers, allowing for a personalized assessment that explores the candidate's depth of knowledge.</p>
+                </div>
+                
+                <div class="assessment-card">
+                    <h3>4. Automated Scoring & Feedback</h3>
+                    <p>After completion, candidates receive an overall score and eligibility percentage, along with specific feedback on their performance.</p>
+                </div>
+                
+                <div class="assessment-card">
+                    <h3>5. Resilient Interview Experience</h3>
+                    <p>Our platform handles network interruptions gracefully, ensuring candidates can complete their interviews without technical difficulties.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section class="features-section">
+            <h2>How It Works</h2>
+            <div class="grid">
+                <div class="card animated-card">
+                    <h3>For Recruiters</h3>
+                    <ol>
+                        <li>Create job descriptions with required skills</li>
+                        <li>Set up interview parameters and question count</li>
+                        <li>Assign interviews to candidates</li>
+                        <li>Review comprehensive results and make data-driven decisions</li>
+                    </ol>
+                </div>
+                
+                <div class="card animated-card">
+                    <h3>For Candidates</h3>
+                    <ol>
+                        <li>Receive interview invitation</li>
+                        <li>Log in to the platform at your convenience</li>
+                        <li>Complete the voice-guided interview</li>
+                        <li>Receive immediate feedback and assessment results</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Transform Your Hiring Process?</h2>
+            <p>Join hundreds of companies already using our AI Interview Bot to streamline their recruitment.</p>
+            <div class="cta-buttons">
+                <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-ghost">Login</a>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 AI Interview Bot. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
