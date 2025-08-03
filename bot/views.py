@@ -1,3 +1,14 @@
+"""Views for the AI Interview Bot application.
+
+This module contains all the view functions for the AI Interview Bot, including:
+- Authentication views (login, signup, logout)
+- Dashboard views for admins and candidates
+- Interview session management
+- Job description management
+- Interview assignment management
+- OpenAI and TTS integration for generating interview questions and evaluations
+"""
+
 from django.shortcuts import render, redirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
@@ -14,18 +25,42 @@ import uuid
 import openai
 import os
 import pyttsx3
+import logging
 from .models import JobDescription, InterviewAssignment, InterviewSession
 from dotenv import load_dotenv
+
+# Initialize environment variables
 load_dotenv()
 
 def homepage(request):
-    """Render the homepage with information about the interview bot"""
+    """Render the homepage with information about the interview bot.
+    
+    This view displays the landing page of the application with general information
+    about the AI Interview Bot and its features.
+    
+    Args:
+        request (HttpRequest): The HTTP request object
+        
+    Returns:
+        HttpResponse: Rendered homepage template
+    """
     return render(request, 'homepage.html')
 
-# OpenAI and Google Cloud TTS Helper Functions
+# OpenAI and TTS Helper Functions
 def initialize_openai_client():
-    """Initialize and return OpenAI client"""
+    """Initialize and return an OpenAI API client.
+    
+    This function retrieves the OpenAI API key from environment variables
+    and initializes a client for making API calls to OpenAI services.
+    
+    Returns:
+        openai.OpenAI: Initialized OpenAI client
+        
+    Raises:
+        ValueError: If the API key is not found in environment variables
+    """
     api_key = os.getenv('OPENAI_API_KEY')
+    print("API Key:", api_key)
     if not api_key:
         raise ValueError("OpenAI API key not found in environment variables")
     
@@ -33,7 +68,27 @@ def initialize_openai_client():
     return client
 
 def generate_interview_question(session):
-    """Generate an interview question and audio using OpenAI and Google Cloud TTS"""
+    """Generate an interview question and audio using OpenAI and TTS.
+    
+    This function creates a technical interview question based on the job description
+    and skills required for the position. It uses OpenAI's GPT model to generate
+    contextually appropriate questions and text-to-speech to create audio for the question.
+    
+    Args:
+        session (InterviewSession): The current interview session object containing
+                                    assignment details and conversation history
+    
+    Returns:
+        dict: A dictionary containing the generated question text and audio URL:
+              {
+                  "question": str,  # The generated interview question
+                  "audio_url": str  # URL to the audio file, or None if generation failed
+              }
+    
+    Note:
+        If an error occurs during question generation, a fallback question will be
+        provided to ensure the interview can continue.
+    """
     try:
         # Get job description details
         assignment = session.assignment
@@ -80,7 +135,7 @@ def generate_interview_question(session):
         
         question = response.choices[0].message.content.strip()
         
-        # Generate audio for the question (Google Cloud TTS)
+        # Generate audio for the question using TTS
         audio_url = generate_question_audio(question)
         
         return {"question": question, "audio_url": audio_url}
@@ -91,38 +146,86 @@ def generate_interview_question(session):
         return {"question": fallback_question, "audio_url": None}
 
 def generate_question_audio(question_text):
-    """Generate audio for a question using open-source pyttsx3 TTS"""
-    import logging
+    """Generate audio for an interview question using pyttsx3 text-to-speech.
+    
+    This function converts the provided question text to speech using the pyttsx3
+    library, saves it as an MP3 file with a unique filename, and returns a URL
+    that can be used to access the audio file from the web application.
+    
+    Args:
+        question_text (str): The text of the interview question to convert to speech
+        
+    Returns:
+        str or None: URL path to the generated audio file, or None if generation failed
+        
+    Note:
+        - Audio files are saved in the media/audio directory with unique UUIDs
+        - The function handles errors gracefully and logs issues for debugging
+        - The speech rate is set to 170 words per minute for clear comprehension
+    """
     logger = logging.getLogger(__name__)
     try:
-        import pyttsx3
+        # Create audio directory if it doesn't exist
         audio_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'media', 'audio')
         os.makedirs(audio_dir, exist_ok=True)
+        
+        # Generate unique filename for the audio file
         filename = f"question_{uuid.uuid4()}.mp3"
         filepath = os.path.join(audio_dir, filename)
 
         # Initialize pyttsx3 engine
         engine = pyttsx3.init()
-        # Optionally set properties (rate, volume, voice)
-        engine.setProperty('rate', 170)
-        engine.setProperty('volume', 1.0)
-        # Save to file (pyttsx3 natively supports wav, but with ffmpeg installed, mp3 works via pydub)
+        
+        # Configure speech properties for optimal interview experience
+        engine.setProperty('rate', 170)     # Words per minute
+        engine.setProperty('volume', 1.0)   # Maximum volume
+        
+        # Save speech to file
         try:
             engine.save_to_file(question_text, filepath)
             engine.runAndWait()
         except Exception as e:
             logger.error(f"pyttsx3 failed to generate audio: {str(e)}")
             return None
+            
+        # Log success and return URL path
         logger.info(f"Audio file written: {filepath}")
         url = f"/media/audio/{filename}"
         logger.info(f"Returning audio URL: {url}")
         return url
+        
     except Exception as e:
         logger.error(f"Error generating audio (pyttsx3): {str(e)}")
         return None
 
 def evaluate_interview(session):
-    """Evaluate the interview and generate score, eligibility, and feedback"""
+    """Evaluate the completed interview and generate score, eligibility, and feedback.
+    
+    This function analyzes the entire interview conversation history using OpenAI's
+    language model to assess the candidate's performance. It evaluates responses based
+    on accuracy, depth of knowledge, clarity, and relevance to the job skills.
+    
+    The evaluation process includes:
+    1. Extracting job description and conversation history from the session
+    2. Creating a specialized system prompt for the AI evaluator
+    3. Sending the conversation to OpenAI for analysis
+    4. Parsing the structured JSON response with scores and feedback
+    5. Storing detailed per-question feedback in the session object
+    
+    Args:
+        session (InterviewSession): The completed interview session object containing
+                                    the assignment details and full conversation history
+    
+    Returns:
+        tuple: A tuple containing three elements:
+            - score (int): Numerical score from 0-100 representing overall performance
+            - eligibility (int): Percentage (0-100) indicating candidate's job eligibility
+            - feedback (str): Detailed written feedback on the candidate's performance
+    
+    Note:
+        If an error occurs during evaluation, default values (score=70, eligibility=50)
+        are returned to ensure the interview process can be completed gracefully.
+    """
     try:
         # Get job description and conversation history
         assignment = session.assignment
@@ -181,6 +284,21 @@ def evaluate_interview(session):
 
 # Authentication Views
 def login_view(request):
+    """Authenticate users and direct them to appropriate dashboards.
+    
+    This view handles user login functionality, including:
+    - Checking if user is already authenticated
+    - Processing login form submissions
+    - Authenticating credentials
+    - Redirecting to role-specific dashboards
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user credentials
+        
+    Returns:
+        HttpResponse: Redirects to appropriate dashboard on success,
+                     or renders login page with error messages on failure
+    """
     if request.user.is_authenticated:
         # Redirect based on user role
         if request.user.groups.filter(name='Admin').exists():
@@ -197,7 +315,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
-            # Redirect based on user role
+            # Redirect based on user role 
             if user.groups.filter(name='Admin').exists():
                 return redirect('admin_dashboard')
             else:
@@ -207,7 +325,20 @@ def login_view(request):
     
     return render(request, 'auth/login.html')
 
+
 def signup_view(request):
+    """Handle user registration and create new user accounts.
+    
+    This view processes user registration requests, validates form data,
+    creates new user accounts, and redirects to appropriate dashboards.
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user data
+        
+    Returns:
+        HttpResponse: Redirects to appropriate dashboard on success,
+                     or renders signup page with error messages on failure
+    """
     if request.user.is_authenticated:
         # Redirect based on user role
         if request.user.groups.filter(name='Admin').exists():
@@ -258,12 +389,35 @@ def signup_view(request):
     return render(request, 'auth/signup.html')
 
 def logout_view(request):
+    """Handle user logout and redirect to login page.
+    
+    This view processes user logout requests by terminating their current session
+    and redirecting them to the login page.
+    
+    Args:
+        request (HttpRequest): The HTTP request object from the user
+        
+    Returns:
+        HttpResponseRedirect: Redirects user to the login page after logout
+    """
     logout(request)
     return redirect('login')
 
 # Dashboard Views
 @login_required
 def admin_dashboard(request):
+    """Handle admin dashboard view and display job descriptions and interview assignments.
+    
+    This view verifies admin privileges, retrieves all job descriptions and interview 
+    assignments from the database, and renders them in the admin dashboard template.
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user info
+        
+    Returns:
+        HttpResponse: Rendered admin dashboard page with job descriptions and assignments
+        HttpResponseRedirect: Redirects to candidate dashboard if unauthorized
+    """
     # Check if user is an admin
     if not request.user.groups.filter(name='Admin').exists():
         messages.error(request, 'You do not have permission to access the admin dashboard')
@@ -284,6 +438,19 @@ def admin_dashboard(request):
 
 @login_required
 def candidate_dashboard(request):
+    """Handle candidate dashboard view and display interview assignments.
+    
+    This view verifies candidate privileges, retrieves and categorizes interview
+    assignments by status (pending, in progress, completed, expired), updates
+    expired assignments, and renders them in the candidate dashboard template.
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user info
+        
+    Returns:
+        HttpResponse: Rendered candidate dashboard with categorized assignments
+        HttpResponseRedirect: Redirects to admin dashboard if unauthorized
+    """
     # Check if user is a candidate
     if not request.user.groups.filter(name='Candidate').exists():
         messages.error(request, 'You do not have permission to access the candidate dashboard')
@@ -300,23 +467,40 @@ def candidate_dashboard(request):
     
     # Categorize assignments by status
     pending_assignments = assignments.filter(status='pending')
-    in_progress_assignments = assignments.filter(status='in_progress')
+    in_progress_assignments = assignments.filter(status='in_progress') 
     completed_assignments = assignments.filter(status='completed')
     expired_assignments = assignments.filter(status='expired')
     
     context = {
         'pending_assignments': pending_assignments,
         'in_progress_assignments': in_progress_assignments,
-        'completed_assignments': completed_assignments,
+        'completed_assignments': completed_assignments, 
         'expired_assignments': expired_assignments,
     }
     
     return render(request, 'dashboard/candidate_dashboard.html', context)
 
+
 # Interview Session Views
 @login_required
 def start_interview(request, assignment_id):
-    """Start or resume an interview session"""
+    """Start or resume an interview session for a candidate.
+    
+    This view handles the interview session initialization and management by:
+    - Validating candidate permissions
+    - Creating or retrieving an existing interview session
+    - Managing interview progress and timing
+    - Generating interview questions and audio
+    - Tracking conversation history
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user info
+        assignment_id (int): ID of the interview assignment to start/resume
+        
+    Returns:
+        HttpResponse: Rendered interview session page with questions and progress
+        HttpResponseRedirect: Redirects to appropriate dashboard if unauthorized/expired
+    """
     # Check if user is a candidate
     if not request.user.groups.filter(name='Candidate').exists():
         messages.error(request, 'You do not have permission to access this interview')
@@ -397,10 +581,32 @@ def start_interview(request, assignment_id):
     
     return render(request, 'interview/interview_session.html', context)
 
+
 @login_required
 @require_POST
 def submit_response(request, session_id):
-    """Handle candidate's response submission"""
+    """Handle candidate's interview response submission and progression.
+
+    This function processes a candidate's response to an interview question,
+    manages the interview flow, and handles completion logic. It:
+    1. Validates the candidate's authorization and session ownership
+    2. Records the response in the conversation history
+    3. Either generates the next question or completes the interview
+    4. Updates session state and progress tracking
+
+    Args:
+        request (HttpRequest): The POST request containing the candidate's response
+        session_id (str): Unique identifier for the interview session
+
+    Returns:
+        JsonResponse: Contains either:
+            - Next question details and progress info
+            - Interview completion status and results redirect URL
+            
+    Raises:
+        Http404: If session is not found
+        JsonResponse: With error status if validation fails
+    """
     # Check if user is a candidate
     if not request.user.groups.filter(name='Candidate').exists():
         return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
@@ -491,40 +697,59 @@ def submit_response(request, session_id):
             'progress_percentage': progress_percentage
         })
 
+
 @login_required
 def interview_results(request, assignment_id):
-    """Display interview results and feedback"""
-    # Get the interview assignment
+    """Display interview results and analyze candidate performance.
+    
+    This view handles displaying interview results and feedback by:
+    - Validating user authorization (candidate or admin)
+    - Retrieving completed interview data
+    - Processing conversation history into Q&A pairs
+    - Analyzing responses and generating feedback
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user info
+        assignment_id (int): ID of the interview assignment to display results for
+        
+    Returns:
+        HttpResponse: Rendered results page with interview analysis and feedback
+        HttpResponseRedirect: Redirects to dashboard if unauthorized/incomplete
+    """
     assignment = get_object_or_404(InterviewAssignment, id=assignment_id)
     
-    # Check if the user is authorized to view these results
     if assignment.candidate != request.user and not request.user.groups.filter(name='Admin').exists():
         messages.error(request, 'You do not have permission to view these results')
         return redirect('candidate_dashboard' if request.user.groups.filter(name='Candidate').exists() else 'admin_dashboard')
     
-    # Check if the interview is completed
     if assignment.status != 'completed':
         messages.error(request, 'This interview is not yet completed')
         return redirect('candidate_dashboard' if request.user.groups.filter(name='Candidate').exists() else 'admin_dashboard')
     
-    # Get the session and extract question-answer pairs
     session = get_object_or_404(InterviewSession, assignment=assignment)
     conversation_history = session.conversation_history
     
-    # Format the conversation history into question-answer pairs with feedback
+    # Analyze conversation and generate feedback
     question_answers = []
     for i in range(0, len(conversation_history), 2):
         if i + 1 < len(conversation_history):
+            feedback = analyze_response(
+                conversation_history[i]['content'], 
+                conversation_history[i + 1]['content'],
+                assignment.job_description.skills
+            )
             qa_pair = {
                 'question': conversation_history[i]['content'],
                 'answer': conversation_history[i + 1]['content'],
-                'feedback': f"Feedback for question {i//2 + 1} will be displayed here."  # Placeholder
+                'feedback': feedback
             }
             question_answers.append(qa_pair)
     
     context = {
         'assignment': assignment,
-        'question_answers': question_answers
+        'question_answers': question_answers,
+        'overall_score': assignment.score,
+        'eligibility': assignment.eligibility
     }
     
     return render(request, 'interview/interview_results.html', context)
@@ -532,6 +757,20 @@ def interview_results(request, assignment_id):
 # Job Description Management Views
 @login_required
 def job_description_create(request):
+    """
+    Handle job description creation view and form submission.
+    
+    This view verifies admin privileges, processes form data, and creates a new job
+    description in the database. If the submission is successful, it redirects to the
+    admin dashboard.
+    
+    Args:
+        request (HttpRequest): The HTTP request object containing user info
+        
+    Returns:
+        HttpResponse: Rendered job description form page
+        HttpResponseRedirect: Redirects to admin dashboard if unauthorized or form submission is successful
+    """
     # Check if user is admin
     if not request.user.groups.filter(name='Admin').exists():
         messages.error(request, 'You do not have permission to create job descriptions')
