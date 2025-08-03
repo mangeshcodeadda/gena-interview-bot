@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.id %}Edit{% else %}Add{% endif %} Job Description - AI Interview Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-secondary {
+            background-color: #f44336;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .error-message {
+            color: #f44336;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{% if form.instance.id %}Edit{% else %}Add{% endif %} Job Description</h1>
+            <a href="{% url 'admin_dashboard' %}" class="btn">Back to Dashboard</a>
+        </div>
+        
+        <div class="card">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_title">Job Title</label>
+                    <input type="text" id="id_title" name="title" value="{{ form.instance.title|default:'' }}" required>
+                    {% if form.title.errors %}
+                        <div class="error-message">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_skills">Skills (comma separated)</label>
+                    <input type="text" id="id_skills" name="skills" value="{{ form.instance.skills|default:'' }}" required>
+                    <small>Example: Python, SQL, JavaScript</small>
+                    {% if form.skills.errors %}
+                        <div class="error-message">{{ form.skills.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_question_count">Number of Questions</label>
+                    <input type="number" id="id_question_count" name="question_count" value="{{ form.instance.question_count|default:'5' }}" min="1" max="20" required>
+                    {% if form.question_count.errors %}
+                        <div class="error-message">{{ form.question_count.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn">Save Job Description</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
