@@ -1,0 +1,611 @@
+/* Dashboard Styles for Interview Bot - Compatible with Admin and Candidate dashboards
+   Modern, Clean, Professional Design */
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+/* CSS Variables for Consistent Theming */
+:root {
+  /* Primary Color Palette - Green Theme */
+  --primary-color: #0d6e3e;
+  --primary-light: #27ae60;
+  --primary-lighter: #2ecc71;
+  --primary-dark: #0a5a32;
+  
+  /* Neutrals */
+  --neutral-white: #ffffff;
+  --neutral-off-white: #f8f9fa;
+  --neutral-light: #e9ecef;
+  --neutral-medium: #ced4da;
+  --neutral-dark: #6c757d;
+  --neutral-darker: #495057;
+  --neutral-darkest: #212529;
+  
+  /* Status Colors */
+  --status-pending: #ff9800;
+  --status-in-progress: #3498db;
+  --status-completed: #27ae60;
+  --status-expired: #e74c3c;
+  
+  /* Accent Colors */
+  --accent-blue: #3498db;
+  --accent-red: #e74c3c;
+  --accent-orange: #f39c12;
+  
+  /* UI Properties */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Typography */
+  --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-secondary);
+  background-color: var(--neutral-off-white);
+  color: var(--neutral-darker);
+  line-height: 1.6;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-light);
+  position: relative;
+}
+
+.header:after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+.header h1 {
+  font-family: var(--font-primary);
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+  font-size: 2rem;
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info span {
+  color: var(--neutral-darker);
+  font-weight: 500;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section h2 {
+  font-family: var(--font-primary);
+  color: var(--neutral-darker);
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+  position: relative;
+  padding-left: 1rem;
+  border-left: 4px solid var(--primary-light);
+}
+
+/* Cards */
+.card {
+  background-color: var(--neutral-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Interview Cards */
+.interview-card {
+  background-color: var(--neutral-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  position: relative;
+  border-top: 4px solid var(--primary-light);
+  transition: all 0.3s ease;
+}
+
+.interview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.interview-card h3 {
+  font-family: var(--font-primary);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--neutral-darkest);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.interview-card p {
+  margin: 0.6rem 0;
+  color: var(--neutral-dark);
+  font-size: 0.95rem;
+}
+
+.interview-card .deadline {
+  color: var(--accent-red);
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.95rem;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.interview-card .status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.status-pending {
+  background-color: var(--status-pending);
+  color: white;
+}
+
+.status-in-progress {
+  background-color: var(--status-in-progress);
+  color: white;
+}
+
+.status-completed {
+  background-color: var(--status-completed);
+  color: white;
+}
+
+.status-expired {
+  background-color: var(--status-expired);
+  color: white;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: var(--accent-red);
+}
+
+.btn-secondary:hover {
+  background-color: #c0392b;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--neutral-white);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+table th, 
+table td {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid var(--neutral-light);
+}
+
+table th {
+  background-color: #f5f7f9;
+  font-weight: 600;
+  color: var(--neutral-darker);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+table tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Action Buttons in Tables */
+.actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.action-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: var(--accent-blue);
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+.delete-btn {
+  background-color: var(--accent-red);
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Empty States */
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--neutral-dark);
+  font-style: italic;
+  background-color: var(--neutral-off-white);
+  border-radius: var(--border-radius-md);
+  border: 1px dashed var(--neutral-medium);
+}
+
+/* Alert Messages */
+.alert {
+  padding: 1rem;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1.5rem;
+  color: var(--neutral-darkest);
+  background-color: var(--neutral-light);
+  border-left: 4px solid var(--neutral-dark);
+}
+
+.alert-success {
+  background-color: rgba(39, 174, 96, 0.1);
+  border-left-color: var(--primary-light);
+}
+
+.alert-info {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left-color: var(--accent-blue);
+}
+
+.alert-warning {
+  background-color: rgba(243, 156, 18, 0.1);
+  border-left-color: var(--accent-orange);
+}
+
+.alert-danger {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left-color: var(--accent-red);
+}
+
+/* Form Styles */
+.form-container {
+  background-color: var(--neutral-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--neutral-light);
+}
+
+.form-icon {
+  background-color: var(--primary-lighter);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  color: white;
+}
+
+.form-title h2 {
+  font-family: var(--font-primary);
+  color: var(--primary-color);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.form-title p {
+  color: var(--neutral-dark);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.styled-form {
+  max-width: 100%;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--neutral-light);
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.form-section h3 {
+  font-family: var(--font-primary);
+  color: var(--neutral-darker);
+  font-size: 1.2rem;
+  margin-bottom: 1.2rem;
+  font-weight: 500;
+  position: relative;
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--primary-light);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--neutral-darker);
+  font-size: 0.95rem;
+}
+
+.required-indicator {
+  color: var(--accent-red);
+  margin-left: 0.25rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  color: var(--neutral-dark);
+  pointer-events: none;
+}
+
+.select-wrapper .input-icon {
+  right: 24px;
+}
+
+.input-help {
+  font-size: 0.85rem;
+  color: var(--neutral-dark);
+  margin-top: 0.5rem;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--neutral-medium);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  color: var(--neutral-darkest);
+  background-color: var(--neutral-white);
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+input[type="number"]:hover,
+input[type="date"]:hover,
+input[type="datetime-local"]:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--primary-lighter);
+}
+
+/* Select Styling */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* Textarea Styling */
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Number Input Styling */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .user-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .form-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-icon {
+    margin-bottom: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

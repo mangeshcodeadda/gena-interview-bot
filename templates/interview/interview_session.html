@@ -5,171 +5,424 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interview Session - AI Interview Bot</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard-style.css' %}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1000px;
+        /* Interview session specific styles */
+        .interview-container {
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
         }
-        .header {
+        
+        .interview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--neutral-light);
         }
-        .header h1 {
-            color: #333;
+        
+        .interview-header h1 {
+            color: var(--neutral-darkest);
             margin: 0;
+            font-family: var(--font-primary);
+            font-weight: 600;
         }
-        .btn {
-            background-color: #4CAF50;
+        
+        .btn-exit {
+            background-color: var(--status-expired);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius-sm);
             cursor: pointer;
             text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
         }
-        .btn-secondary {
-            background-color: #f44336;
+        
+        .btn-exit:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
-        .btn:hover {
-            opacity: 0.9;
+        
+        .btn-exit svg {
+            margin-right: 0.5rem;
         }
-        .interview-info {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+        
+        .interview-info-card {
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
-        .interview-info h2 {
+        
+        .interview-info-card h2 {
             margin-top: 0;
-            color: #333;
+            color: var(--neutral-darkest);
+            font-family: var(--font-primary);
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
-        .interview-info p {
-            margin: 5px 0;
-            color: #666;
+        
+        .interview-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
+        
+        .interview-meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .interview-meta-icon {
+            background-color: rgba(46, 204, 113, 0.1);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        .interview-meta-text {
+            font-size: 0.95rem;
+        }
+        
+        .interview-meta-text strong {
+            display: block;
+            color: var(--neutral-darker);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .interview-meta-text span {
+            color: var(--neutral-dark);
+        }
+        
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+        
         .progress-bar {
-            height: 10px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin: 15px 0;
+            height: 8px;
+            background-color: var(--neutral-lighter);
+            border-radius: var(--border-radius-pill);
             overflow: hidden;
+            margin-top: 0.5rem;
         }
+        
         .progress {
             height: 100%;
-            background-color: #4CAF50;
-            border-radius: 5px;
+            background: linear-gradient(to right, var(--primary-lighter), var(--primary-color));
+            border-radius: var(--border-radius-pill);
+            transition: width 0.5s ease;
         }
+        
         .chat-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            height: 500px;
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            height: 550px;
             display: flex;
             flex-direction: column;
+            border-top: 4px solid var(--primary-light);
         }
+        
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neutral-light) transparent;
         }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--neutral-light);
+            border-radius: 20px;
+        }
+        
         .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 18px;
+            margin-bottom: 1.25rem;
+            padding: 1rem 1.25rem;
+            border-radius: var(--border-radius-lg);
             max-width: 80%;
+            position: relative;
+            box-shadow: var(--shadow-xs);
+            line-height: 1.5;
         }
+        
         .bot-message {
-            background-color: #f1f0f0;
+            background-color: var(--neutral-off-white);
             align-self: flex-start;
             margin-right: auto;
+            border-bottom-left-radius: 0;
         }
+        
         .user-message {
-            background-color: #dcf8c6;
+            background-color: rgba(46, 204, 113, 0.1);
             align-self: flex-end;
             margin-left: auto;
+            border-bottom-right-radius: 0;
+            color: var(--neutral-darkest);
         }
-        .chat-input {
-            display: flex;
-            gap: 10px;
+        
+        .user-message pre {
+            margin: 0;
+            font-family: var(--font-secondary);
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        .chat-input textarea {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: none;
-            height: 60px;
+        
+        .question-number {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary-color);
+            font-family: var(--font-primary);
+            font-size: 1.1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--neutral-lighter);
         }
+        
         .audio-controls {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 1.25rem;
         }
-        .audio-controls button {
-            background-color: #2196F3;
+        
+        .audio-btn {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
             cursor: pointer;
-            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            min-width: 220px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .timer {
-            background-color: #f1f0f0;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
+        
+        .audio-available:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
-        .question-number {
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #2196F3;
+        
+        .audio-unavailable {
+            background-color: #f0f0f0;
+            color: #666;
+            cursor: not-allowed;
+            border: 1px solid #ddd;
         }
+        
+        .audio-icon-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .audio-disabled {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .audio-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+        
+        .audio-label {
+            font-weight: 600;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .audio-status {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+        
+        .audio-status-unavailable {
+            color: #999;
+        }
+        
+        .audio-controls .timer {
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--text-color);
+            background-color: #f5f5f5;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .chat-input textarea {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--neutral-light);
+            border-radius: var(--border-radius-md);
+            resize: none;
+            height: 80px;
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+        
+        .chat-input button {
+            align-self: flex-end;
+            height: 50px;
+            padding: 0 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-input button:hover:not(:disabled) {
+            background-color: var(--primary-darker);
+            transform: translateY(-2px);
+        }
+        
+        .chat-input button:disabled {
+            background-color: var(--neutral-light);
+            cursor: not-allowed;
+        }
+        
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 0, 0, 0.1);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #2196F3;
+            border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
+            margin-left: 0.5rem;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .interview-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-input {
+                flex-direction: column;
+            }
+            
+            .chat-input button {
+                align-self: stretch;
+                height: 45px;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <div class="interview-container">
+        <div class="interview-header">
             <h1>Interview Session</h1>
-            <a href="{% url 'candidate_dashboard' %}" class="btn btn-secondary" id="exit-btn">Exit Interview</a>
+            <a href="{% url 'candidate_dashboard' %}" class="btn-exit" id="exit-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"></path><path d="M6 6l12 12"></path></svg>
+                Exit Interview
+            </a>
         </div>
         
-        <div class="interview-info">
+        <div class="interview-info-card">
             <h2>{{ assignment.job_description.title }}</h2>
-            <p><strong>Skills:</strong> {{ assignment.job_description.skills }}</p>
-            <p><strong>Total Questions:</strong> {{ assignment.job_description.question_count }}</p>
-            <p><strong>Current Question:</strong> <span id="current-question">{{ session.current_question }}</span> of {{ assignment.job_description.question_count }}</p>
-            <p><strong>Time Remaining:</strong> <span id="time-remaining">{{ time_remaining }}</span></p>
             
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar" style="width: 0%;"></div>
+            <div class="interview-meta">
+                <div class="interview-meta-item">
+                    <div class="interview-meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </div>
+                    <div class="interview-meta-text">
+                        <strong>Skills</strong>
+                        <span>{{ assignment.job_description.skills }}</span>
+                    </div>
+                </div>
+                
+                <div class="interview-meta-item">
+                    <div class="interview-meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="interview-meta-text">
+                        <strong>Time Remaining</strong>
+                        <span id="time-remaining">{{ time_remaining }}</span>
+                    </div>
+                </div>
+                
+                <div class="interview-meta-item">
+                    <div class="interview-meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    </div>
+                    <div class="interview-meta-text">
+                        <strong>Questions</strong>
+                        <span><span id="current-question">{{ session.current_question }}</span> of {{ assignment.job_description.question_count }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-label">Interview Progress</div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar" style="width: 0%;"></div>
+                </div>
             </div>
         </div>
         
@@ -192,9 +445,25 @@
             <div class="audio-controls">
                 {% if audio_url %}
                     <audio id="question-audio" src="{{ audio_url }}" preload="auto"></audio>
-                    <button id="play-audio">Play Question Audio</button>
+                    <button id="play-audio" class="audio-btn audio-available">
+                        <div class="audio-icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </div>
+                        <div class="audio-text">
+                            <span class="audio-label">Question Audio</span>
+                            <span class="audio-status">Available</span>
+                        </div>
+                    </button>
                 {% else %}
-                    <button id="play-audio" disabled>No Audio Available</button>
+                    <button id="play-audio" disabled class="audio-btn audio-unavailable">
+                        <div class="audio-icon-container audio-disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                        </div>
+                        <div class="audio-text">
+                            <span class="audio-label">Question Audio</span>
+                            <span class="audio-status audio-status-unavailable">Not Available</span>
+                        </div>
+                    </button>
                 {% endif %}
                 <span class="timer" id="audio-timer">00:00</span>
             </div>
@@ -203,7 +472,9 @@
                 {% csrf_token %}
                 <div class="chat-input">
                     <textarea name="response" id="response-input" placeholder="Type your answer here..." required></textarea>
-                    <button type="submit" class="btn" id="submit-btn">Submit Answer</button>
+                    <button type="submit" id="submit-btn">
+                        <span>Submit Answer</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -272,22 +543,40 @@
                             const botMessage = document.createElement('div');
                             botMessage.className = 'message bot-message';
                             
-                            // Add audio for next question if available
+                            // Update the main audio player with new audio if available
                             if (data.audio_url) {
-                                let audioDiv = document.createElement('div');
-                                audioDiv.innerHTML = `<audio id='question-audio' src='${data.audio_url}' preload='auto'></audio><button id='play-audio'>Play Question Audio</button>`;
-                                botMessage.appendChild(audioDiv);
-                                // Attach event listener to play button
-                                setTimeout(() => {
-                                    const btn = botMessage.querySelector('#play-audio');
-                                    const audio = botMessage.querySelector('#question-audio');
-                                    if (btn && audio) {
-                                        btn.addEventListener('click', function() {
-                                            audio.currentTime = 0;
-                                            audio.play();
-                                        });
-                                    }
-                                }, 0);
+                                // Update the global audio element
+                                const globalAudio = document.getElementById('question-audio');
+                                globalAudio.src = data.audio_url;
+                                globalAudio.load();
+                                
+                                // Update the global play button to show available state
+                                const globalPlayBtn = document.getElementById('play-audio');
+                                globalPlayBtn.disabled = false;
+                                globalPlayBtn.className = 'audio-btn audio-available';
+                                globalPlayBtn.innerHTML = `
+                                    <div class="audio-icon-container">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                    </div>
+                                    <div class="audio-text">
+                                        <span class="audio-label">Question Audio</span>
+                                        <span class="audio-status">Available</span>
+                                    </div>
+                                `;
+                            } else {
+                                // If no audio, update the button to show unavailable state
+                                const globalPlayBtn = document.getElementById('play-audio');
+                                globalPlayBtn.disabled = true;
+                                globalPlayBtn.className = 'audio-btn audio-unavailable';
+                                globalPlayBtn.innerHTML = `
+                                    <div class="audio-icon-container audio-disabled">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                                    </div>
+                                    <div class="audio-text">
+                                        <span class="audio-label">Question Audio</span>
+                                        <span class="audio-status audio-status-unavailable">Not Available</span>
+                                    </div>
+                                `;
                             }
                             
                             const questionNumber = document.createElement('div');
@@ -334,10 +623,36 @@
                 }
             });
             
-            // Audio playback (placeholder - will be implemented with Google Cloud TTS)
-            playAudioBtn.addEventListener('click', function() {
-                alert('Audio playback will be implemented with Google Cloud TTS');
-            });
+            // Audio playback and timer functionality
+            if (audioElem) {
+                // Update timer during playback
+                audioElem.addEventListener('timeupdate', function() {
+                    const currentTime = audioElem.currentTime;
+                    const minutes = Math.floor(currentTime / 60);
+                    const seconds = Math.floor(currentTime % 60);
+                    audioTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                });
+                
+                // Reset timer when audio ends
+                audioElem.addEventListener('ended', function() {
+                    audioTimer.textContent = '00:00';
+                    
+                    // Update play button icon to indicate audio can be played again
+                    const playIcon = playAudioBtn.querySelector('svg');
+                    if (playIcon) {
+                        playIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                    }
+                });
+                
+                // Update button state during playback
+                audioElem.addEventListener('play', function() {
+                    // Change play icon to pause icon during playback
+                    const playIcon = playAudioBtn.querySelector('svg');
+                    if (playIcon) {
+                        playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+                    }
+                });
+            }
         });
     </script>
 </body>
